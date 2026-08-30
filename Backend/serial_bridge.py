@@ -3,20 +3,31 @@ from flask_cors import CORS
 import serial
 import threading
 import time
-from predict import predict_oil_temp
+import joblib
+import pandas as pd
 
-# ---------------- CONFIG ----------------
+# =========================
+# CONFIGURATION
+# =========================
 PORT = "COM3"
 BAUD = 115200
-MIST_THRESHOLD = 90
 
-# ---------------- FLASK ----------------
+DECISION_THRESHOLD = 36.0  # AI relay threshold
+
+# =========================
+# LOAD ML MODEL
+# =========================
+model = joblib.load("model.pkl")
+
+# =========================
+# FLASK APP
+# =========================
 app = Flask(__name__)
 CORS(app)
 
 ser = None
 
-# Live data shared with React
+# Live data for React
 latest = {
     "temperature": 0.0,
     "humidity": 0.0,
@@ -28,7 +39,11 @@ latest = {
     "pump": "OFF"
 }
 
-# ---------------- SERIAL THREAD ----------------
+# =========================
+# SERIAL READER THREAD
+# Expected Arduino Format:
+# dhtTemp,dhtHum,dsTemp,load,pf,loadCurrent,mode
+# =========================
 def read_serial():
     global ser
 
@@ -39,48 +54,62 @@ def read_serial():
             if not line:
                 continue
 
-            values = [float(v) for v in line.split(",")]
+            print("RAW:", line)
 
-            # Expected:
-            # humidity,current,load,loadCurrent,powerFactor
-            if len(values) != 5:
-                print("Invalid:", line)
+            parts = line.split(",")
+
+            if len(parts) < 7:
                 continue
 
-            humidity, current, load, load_current, pf = values
+            dhtTemp = float(parts[0])
+            humidity = float(parts[1])
+            dsTemp = float(parts[2])
+            load = float(parts[3])
+            pf = float(parts[4])
+            loadCurrent = float(parts[5])
+            mode = parts[6]
 
-            # ML prediction requires 6 features
-            features = [
-                humidity,
-                current,
-                load,
-                humidity,
-                current,
-                load
-            ]
+            # ML Prediction
+            X = pd.DataFrame(
+                [[dhtTemp, dsTemp, load, pf]],
+                columns=[
+                    "ambient_temp",
+                    "hotspot_temp",
+                    "load_percent",
+                    "load_efficiency_index",
+                ],
+            )
 
-            predicted_temp = predict_oil_temp(features)
+            predicted_temp = float(model.predict(X)[0])
 
+            # Relay Command
+            if predicted_temp > DECISION_THRESHOLD:
+                ser.write(b"RELAY_ON\n")
+                pump = "ON"
+            else:
+                ser.write(b"RELAY_OFF\n")
+                pump = "OFF"
+
+            # Update React data
             latest["temperature"] = round(predicted_temp, 1)
             latest["humidity"] = round(humidity, 1)
-            latest["current"] = round(current, 2)
             latest["load"] = int(load)
-            latest["loadCurrent"] = round(load_current, 2)
+            latest["current"] = round(dsTemp, 1)
+            latest["loadCurrent"] = round(loadCurrent, 2)
             latest["powerFactor"] = round(pf, 2)
+            latest["pump"] = pump
 
-            if predicted_temp > MIST_THRESHOLD:
-                latest["pump"] = "ON"
-                ser.write(b"MIST_ON\n")
-            else:
-                latest["pump"] = "OFF"
-                ser.write(b"MIST_OFF\n")
-
-            print(latest)
+            print(
+                f"Pred:{predicted_temp:.1f}°C | "
+                f"Load:{load}% | LC:{loadCurrent:.2f}A | {pump}"
+            )
 
         except Exception as e:
             print("Serial Error:", e)
 
-# ---------------- API ----------------
+# =========================
+# API ROUTES
+# =========================
 @app.route("/")
 def home():
     return "Smart Mist Cooling Backend Running"
@@ -89,14 +118,15 @@ def home():
 def get_data():
     return jsonify(latest)
 
-# ---------------- MAIN ----------------
+# =========================
+# MAIN
+# =========================
 if __name__ == "__main__":
-
     ser = serial.Serial(PORT, BAUD, timeout=2)
     time.sleep(2)
     ser.reset_input_buffer()
 
     threading.Thread(target=read_serial, daemon=True).start()
 
-    print(f"Listening on {PORT} at {BAUD} baud")
+    print(f"Listening on {PORT} ({BAUD} baud)")
     app.run(host="127.0.0.1", port=5000, debug=False)
