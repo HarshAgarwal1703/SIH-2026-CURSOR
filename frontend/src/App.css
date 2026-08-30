@@ -2,7 +2,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family: "Segoe UI", sans-serif;
+  font-family:"Segoe UI",sans-serif;
 }
 
 body{
@@ -16,7 +16,7 @@ body{
   background:linear-gradient(135deg,#081826,#10314b,#0b2236);
 }
 
-/* Header */
+/* ---------------- Header ---------------- */
 
 .header{
   display:flex;
@@ -52,11 +52,11 @@ body{
   background:#dc2626;
 }
 
-/* Cards */
+/* ---------------- Cards ---------------- */
 
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
   gap:20px;
 }
 
@@ -65,27 +65,46 @@ body{
   backdrop-filter:blur(14px);
   border:1px solid rgba(255,255,255,.08);
   border-radius:18px;
-  padding:22px;
+  padding:20px;
   box-shadow:0 10px 30px rgba(0,0,0,.25);
+  transition:.25s;
 }
 
-.card h3{
-  color:#b8d8ea;
-  font-size:16px;
+.card:hover{
+  transform:translateY(-5px);
+}
+
+.cardHeader{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+}
+
+.cardHeader h3{
+  color:#cde7ff;
+  font-size:15px;
+  font-weight:600;
 }
 
 .cardValue{
-  font-size:42px;
-  font-weight:bold;
-  margin-top:15px;
+  margin-top:18px;
+  font-size:36px;
+  font-weight:700;
 }
 
 .cardValue span{
   font-size:18px;
   margin-left:5px;
+  color:white;
 }
 
-/* Bottom */
+/* ---------------- Bottom Section ---------------- */
 
 .bottomSection{
   margin-top:30px;
@@ -103,16 +122,38 @@ body{
   box-shadow:0 10px 30px rgba(0,0,0,.25);
 }
 
+/* ---------------- Gauge ---------------- */
+
 .gauge{
   display:flex;
   flex-direction:column;
   align-items:center;
+  justify-content:center;
 }
 
-.gauge h2{
-  margin-top:-10px;
-  color:#4cc9f0;
+.gauge h3{
+  color:#cde7ff;
+  margin-bottom:10px;
 }
+
+.gaugeValue{
+  text-align:center;
+  margin-top:-10px;
+}
+
+.gaugeValue h2{
+  font-size:34px;
+  color:#4cc9f0;
+  margin:0;
+}
+
+.gaugeValue p{
+  font-size:14px;
+  color:#9ecae1;
+  margin-top:4px;
+}
+
+/* ---------------- Status ---------------- */
 
 .statusCard h2{
   text-align:center;
@@ -124,7 +165,7 @@ body{
   text-align:center;
   padding:16px;
   border-radius:12px;
-  font-size:30px;
+  font-size:28px;
   font-weight:bold;
   margin-bottom:25px;
 }
@@ -146,10 +187,12 @@ body{
 }
 
 .pfBox h1{
-  font-size:52px;
+  font-size:48px;
   color:#ffd166;
   margin-top:5px;
 }
+
+/* ---------------- Info ---------------- */
 
 .info{
   margin-top:25px;
@@ -170,12 +213,24 @@ body{
   font-size:14px;
 }
 
-/* Responsive */
+.info strong{
+  color:white;
+}
 
-@media(max-width:768px){
+/* ---------------- Responsive ---------------- */
+
+@media(max-width:900px){
 
   .bottomSection{
     grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:600px){
+
+  .app{
+    padding:20px;
   }
 
   .header{
@@ -185,6 +240,14 @@ body{
 
   .header h1{
     font-size:26px;
+  }
+
+  .grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .cardValue{
+    font-size:28px;
   }
 
 }

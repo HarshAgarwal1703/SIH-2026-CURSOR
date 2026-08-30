@@ -1,12 +1,16 @@
 import {
   RadialBarChart,
   RadialBar,
-  PolarAngleAxis
+  PolarAngleAxis,
 } from "recharts";
 
-export default function Gauge({ value, title, color }) {
-
-  const data = [{ value }];
+export default function Gauge({ value = 0, title, color }) {
+  const chartData = [
+    {
+      name: "Load",
+      value: Math.min(Math.max(value, 0), 100),
+    },
+  ];
 
   return (
     <div className="gauge">
@@ -15,27 +19,30 @@ export default function Gauge({ value, title, color }) {
       <RadialBarChart
         width={220}
         height={180}
-        innerRadius="70%"
+        innerRadius="68%"
         outerRadius="100%"
-        data={data}
+        data={chartData}
         startAngle={180}
         endAngle={0}
       >
         <PolarAngleAxis
           type="number"
-          domain={[0,100]}
+          domain={[0, 100]}
           tick={false}
         />
 
         <RadialBar
-          background
           dataKey="value"
+          background
           fill={color}
-          cornerRadius={10}
+          cornerRadius={12}
         />
       </RadialBarChart>
 
-      <h2>{value}%</h2>
+      <div className="gaugeValue">
+        <h2>{Math.round(value)}%</h2>
+        <p>Transformer Load</p>
+      </div>
     </div>
   );
 }
