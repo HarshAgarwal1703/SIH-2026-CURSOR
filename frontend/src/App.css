@@ -1,0 +1,190 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body{
+  background:#081826;
+}
+
+.app{
+  min-height:100vh;
+  padding:35px;
+  color:white;
+  background:linear-gradient(135deg,#081826,#10314b,#0b2236);
+}
+
+/* Header */
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:30px;
+  flex-wrap:wrap;
+  gap:15px;
+}
+
+.header h1{
+  font-size:34px;
+  letter-spacing:1px;
+}
+
+.header p{
+  color:#9ecae1;
+  margin-top:6px;
+}
+
+.live,
+.offline{
+  padding:10px 18px;
+  border-radius:30px;
+  font-weight:600;
+}
+
+.live{
+  background:#16a34a;
+}
+
+.offline{
+  background:#dc2626;
+}
+
+/* Cards */
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+
+.card{
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+.card h3{
+  color:#b8d8ea;
+  font-size:16px;
+}
+
+.cardValue{
+  font-size:42px;
+  font-weight:bold;
+  margin-top:15px;
+}
+
+.cardValue span{
+  font-size:18px;
+  margin-left:5px;
+}
+
+/* Bottom */
+
+.bottomSection{
+  margin-top:30px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.gaugeCard,
+.statusCard{
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(14px);
+  border-radius:18px;
+  padding:25px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+.gauge{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.gauge h2{
+  margin-top:-10px;
+  color:#4cc9f0;
+}
+
+.statusCard h2{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.pumpOn,
+.pumpOff{
+  text-align:center;
+  padding:16px;
+  border-radius:12px;
+  font-size:30px;
+  font-weight:bold;
+  margin-bottom:25px;
+}
+
+.pumpOn{
+  background:#16a34a;
+}
+
+.pumpOff{
+  background:#dc2626;
+}
+
+.pfBox{
+  text-align:center;
+}
+
+.pfBox p{
+  color:#b8d8ea;
+}
+
+.pfBox h1{
+  font-size:52px;
+  color:#ffd166;
+  margin-top:5px;
+}
+
+.info{
+  margin-top:25px;
+  display:flex;
+  justify-content:space-between;
+  border-top:1px solid rgba(255,255,255,.1);
+  padding-top:18px;
+}
+
+.info div{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.info span{
+  color:#9ecae1;
+  font-size:14px;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+  .bottomSection{
+    grid-template-columns:1fr;
+  }
+
+  .header{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .header h1{
+    font-size:26px;
+  }
+
+}
